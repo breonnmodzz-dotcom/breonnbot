@@ -1,0 +1,35 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# --- CONFIGURAÇÕES DE MARCA ---
+STORE_NAME = "💎 BREONN STORE 💎"
+PRODUCT_NAME = "🔥 Conta Guest Lvl 15 🔥"
+PRODUCT_PRICE = 0.50  # Preço ajustado para R$ 0,65
+
+# --- CONFIGURAÇÕES DE PAGAMENTO ---
+PIX_KEYS = [
+    "SUA_CHAVE_PIX_AQUI",
+    "OUTRA_CHAVE_OPCIONAL"
+]
+PIX_NAME = "BREONN MODZ"
+
+# --- CONFIGURAÇÕES DO BOT ---
+TELEGRAM_TOKEN = os.getenv("TELEGRAM_TOKEN", "8321508263:AAEbdlTOI3LRhWnD2uDeqNqurxy_GCrchtA")
+MERCADOPAGO_TOKEN = os.getenv("MERCADOPAGO_TOKEN", "APP_USR-4856923995490365-020409-4f99e0cdc1a66e4336228f3017723bed-2537975312")
+ADMIN_ID = os.getenv("ADMIN_ID", "7981212751")
+LOG_CHANNEL_ID = os.getenv("LOG_CHANNEL_ID", "@BREONNSTORELOGS") # Canal de logs configurado
+FEEDBACK_CHANNEL_ID = "@FEEDBACKSBREONNSTORE" # Canal de feedbacks automático
+DONO_USERNAME = "breonnmodz" # Username do dono sem o @
+
+# --- GERENCIAMENTO DE CAMINHOS ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "database", "bot_database.db")
+ACCOUNTS_DIR = os.path.join(BASE_DIR, "storage", "accounts")
+SOLD_DIR = os.path.join(BASE_DIR, "storage", "sold")
+
+# Garante que as pastas existam
+os.makedirs(os.path.join(BASE_DIR, "database"), exist_ok=True)
+os.makedirs(ACCOUNTS_DIR, exist_ok=True)
+os.makedirs(SOLD_DIR, exist_ok=True)

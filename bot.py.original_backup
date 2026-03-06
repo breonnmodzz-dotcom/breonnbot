@@ -1,0 +1,123 @@
+import logging
+import sys
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, filters
+from config import TELEGRAM_TOKEN
+from modules.handlers import (
+    start, 
+    button_handler, 
+    admin_confirmar, 
+    admin_addsaldo,
+    get_my_id, 
+    admin_setcargo, 
+    admin_remcargo,
+    admin_tirar_revenda,
+    admin_sync_estoque,
+    admin_anuncio,
+    admin_reiniciar,
+    admin_evento,
+    admin_reset,
+    admin_settoken,
+    cmd_estoque,
+    cmd_perfil,
+    cmd_suporte,
+    cmd_rank,
+    admin_banir,
+    admin_desbanir,
+    admin_estatisticas,
+    admin_criar_cupom,
+    admin_ver_cupons,
+    admin_apagar_cupom,
+    cmd_comandos_dono,
+    admin_logs,
+    admin_enviar_contas,
+    admin_organizar_estoque,
+    admin_setpreco,
+    admin_setprecorevenda,
+    admin_importar_json,
+    admin_converter_json,
+    resgatar,  # 🔹 Função corrigida
+    handle_text,
+    handle_photo
+)
+
+# Configuração de logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
+def main():
+    token = TELEGRAM_TOKEN  # 🔹 Usando token do config.py
+    
+    try:
+        application = ApplicationBuilder().token(token).build()
+        
+        # Handlers de Comandos Administrativos
+        application.add_handler(CommandHandler('start', start))
+        application.add_handler(CommandHandler('confirmar', admin_confirmar))
+        application.add_handler(CommandHandler('addsaldo', admin_addsaldo))
+        application.add_handler(CommandHandler('setcargo', admin_setcargo))
+        application.add_handler(CommandHandler('remcargo', admin_remcargo))
+        application.add_handler(CommandHandler('tirarrevenda', admin_tirar_revenda))
+        application.add_handler(CommandHandler('meuid', get_my_id))
+        application.add_handler(CommandHandler('sync', admin_sync_estoque))
+        application.add_handler(CommandHandler('anuncio', admin_anuncio))
+        application.add_handler(CommandHandler('reiniciar', admin_reiniciar))
+        application.add_handler(CommandHandler('evento', admin_evento))
+        application.add_handler(CommandHandler('reset', admin_reset))
+        application.add_handler(CommandHandler('settoken', admin_settoken))
+        application.add_handler(CommandHandler('banir', admin_banir))
+        application.add_handler(CommandHandler('desbanir', admin_desbanir))
+        application.add_handler(CommandHandler('stats', admin_estatisticas))
+        application.add_handler(CommandHandler('cupom', admin_criar_cupom))
+        application.add_handler(CommandHandler('vercupons', admin_ver_cupons))
+        application.add_handler(CommandHandler('delcupom', admin_apagar_cupom))
+        application.add_handler(CommandHandler('comandos', cmd_comandos_dono))
+        application.add_handler(CommandHandler('logs', admin_logs))
+        application.add_handler(CommandHandler('enviar', admin_enviar_contas))
+        application.add_handler(CommandHandler('organizar', admin_organizar_estoque))
+        application.add_handler(CommandHandler('setpreco', admin_setpreco))
+        application.add_handler(CommandHandler('setprecorevenda', admin_setprecorevenda))
+        application.add_handler(CommandHandler('importar', admin_importar_json))
+        application.add_handler(CommandHandler('converter', admin_converter_json))
+        
+        # Handler para arquivos JSON enviados
+        # Se enviar com a legenda /importar -> Adiciona ao estoque
+        # Se enviar com a legenda /converter -> Devolve o ZIP com .dat
+        application.add_handler(MessageHandler(filters.Document.FileExtension("json") & filters.CaptionRegex(r'^/importar'), admin_importar_json))
+        application.add_handler(MessageHandler(filters.Document.FileExtension("json") & filters.CaptionRegex(r'^/converter'), admin_converter_json))
+        application.add_handler(MessageHandler(filters.Document.FileExtension("json") & ~filters.COMMAND, admin_converter_json))
+        
+        # Atalhos de Comandos Diretos
+        application.add_handler(CommandHandler('resgatar', resgatar))  # 🔹 Corrigido
+        application.add_handler(CommandHandler('estoque', cmd_estoque))
+        application.add_handler(CommandHandler('perfil', cmd_perfil))
+        application.add_handler(CommandHandler('suporte', cmd_suporte))
+        application.add_handler(CommandHandler('rank', cmd_rank))
+        
+        # Handler de Botões
+        application.add_handler(CallbackQueryHandler(button_handler))
+        
+        # Handler de Mensagens de Texto
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
+        
+        # Handler de Fotos
+        application.add_handler(MessageHandler(filters.PHOTO & filters.CaptionRegex(r'^/anuncio'), admin_anuncio))
+        application.add_handler(MessageHandler(filters.PHOTO & ~filters.CaptionRegex(r'^/anuncio'), handle_photo))
+        
+        print("--------------------------------------------------")
+        print("💎 BREONN STORE ELITE - O Melhor Bot do Mundo!")
+        print("--------------------------------------------------")
+        print("Bot iniciado com sucesso!")
+        print("Aguardando mensagens...")
+        print("--------------------------------------------------")
+        
+        application.run_polling()
+        
+    except Exception as e:
+        logger.error(f"Erro fatal ao iniciar o bot: {e}")
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
